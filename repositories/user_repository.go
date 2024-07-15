@@ -63,7 +63,7 @@ func (r *authRepo) SignUserAccessToken(req *entities.User) (string, error) {
 
 func (r *authRepo) GetUserByID(userID int) (*entities.User, error) {
 	var user entities.User
-	if err := r.db.First(&user, userID).Error; err != nil { 
+	if err := r.db.First(&user, userID).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -103,17 +103,25 @@ func (r *authRepo) AddBookToUser(userID int, reqBook *entities.Book) (entities.U
 
 	var existingUserBook entities.UserBook
 	if err := r.db.Where("user_id = ? AND book_id = ?", userID, reqBook.Book_ID).First(&existingUserBook).Error; err != nil {
-			if err := r.db.Create(&userBook).Error; err != nil {
-				return entities.User{}, entities.Book{}, err
-			}
+		if err := r.db.Create(&userBook).Error; err != nil {
+			return entities.User{}, entities.Book{}, err
+		}
 	} else {
 		fmt.Println("คุณมีรายการนี้แล้ว")
 		return user, book, errors.New("duplicate entry")
 	}
 
-	if err := r.db.First(&book, reqBook.Book_ID).Error; err != nil {
+	if err := r.db.Where("book_id = ?", reqBook.Book_ID).First(&book).Error; err != nil {
 		return user, book, err
 	}
 
-	return user, *reqBook, nil
+	if err := r.db.Where("user_id = ?", userID).First(&user).Error; err != nil {
+		return user, book, err
+	}
+
+	if err := r.db.Model(&user).Association("Books").Append(&reqBook); err != nil {
+		return user, book, err
+	}
+
+	return user, book, nil
 }

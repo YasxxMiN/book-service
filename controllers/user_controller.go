@@ -105,7 +105,6 @@ func (controller *AuthController) AddBook(c *fiber.Ctx) error {
 	user := c.Locals("user").(*entities.User)
 	var request entities.Book
 
-
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid request body",
