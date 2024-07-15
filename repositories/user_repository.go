@@ -103,11 +103,9 @@ func (r *authRepo) AddBookToUser(userID int, reqBook *entities.Book) (entities.U
 
 	var existingUserBook entities.UserBook
 	if err := r.db.Where("user_id = ? AND book_id = ?", userID, reqBook.Book_ID).First(&existingUserBook).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
 			if err := r.db.Create(&userBook).Error; err != nil {
 				return entities.User{}, entities.Book{}, err
 			}
-		}
 	} else {
 		fmt.Println("คุณมีรายการนี้แล้ว")
 		return user, book, errors.New("duplicate entry")
