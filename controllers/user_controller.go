@@ -150,6 +150,7 @@ func (controller *AuthController) DeleteBookUser(c *fiber.Ctx) error {
 
 func (controller *AuthController) UpdateBookUser(c *fiber.Ctx) error {
 	user := c.Locals("user").(*entities.User)
+	bookID := c.Params("book_id")
 	var request entities.Book
 
 	if err := c.BodyParser(&request); err != nil {
@@ -158,7 +159,7 @@ func (controller *AuthController) UpdateBookUser(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.AuthUsecase.UpdateBookUser(user.User_ID, &request)
+	err := controller.AuthUsecase.UpdateBookUser(user.User_ID, &request, bookID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to update book",

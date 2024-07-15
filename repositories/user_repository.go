@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"test-go-book/entities"
 	"time"
 
@@ -19,7 +20,7 @@ type AuthRepository interface {
 	ChangePassword(userID int, req *entities.User) error
 	AddBookToUser(userID int, reqBook *entities.Book) (entities.User, entities.Book, error)
 	DeleteBookUser(userID int, reqBook *entities.Book) error
-	UpdateBookUser(userID int, reqBook *entities.Book) error
+	UpdateBookUser(userID int, reqBook *entities.Book, bookID string) error
 }
 
 type authRepo struct {
@@ -136,9 +137,14 @@ func (r *authRepo) DeleteBookUser(userID int, reqBook *entities.Book) error {
 	return nil
 }
 
-func (r *authRepo) UpdateBookUser(userID int, reqBook *entities.Book) error {
+func (r *authRepo) UpdateBookUser(userID int, reqBook *entities.Book, bookID string) error {
+	book_id, err := strconv.Atoi(bookID)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
 	if err := r.db.Table("user_books").
-		Where("user_id = ? AND book_id = ?", userID, reqBook.Book_ID).
+		Where("user_id = ? AND book_id = ?", userID, book_id).
 		Updates(map[string]interface{}{
 			"book_id": reqBook.Book_ID,
 		}).Error; err != nil {
