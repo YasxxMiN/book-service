@@ -3,6 +3,7 @@ package repositories
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"test-go-book/entities"
@@ -21,6 +22,7 @@ type AuthRepository interface {
 	AddBookToUser(userID int, reqBook *entities.Book) (entities.User, entities.Book, error)
 	DeleteBookUser(userID int, reqBook *entities.Book) error
 	UpdateBookUser(userID int, reqBook *entities.Book, bookID string) error
+	GetBookUser(userID int) ([]entities.BookandUser, error)
 }
 
 type authRepo struct {
@@ -153,4 +155,16 @@ func (r *authRepo) UpdateBookUser(userID int, reqBook *entities.Book, bookID str
 
 	return nil
 
+}
+
+func (r *authRepo) GetBookUser(userID int) ([]entities.BookandUser, error) {
+	var userbook []entities.BookandUser
+	if err := r.db.Table("user_books").
+		Select("user_books.user_id, books.book_id, books.title, books.author, books.description").
+		Joins("INNER JOIN books on user_books.book_id = books.book_id").
+		Where("user_books.user_id = ?", userID).
+		Scan(&userbook).Error; err != nil {
+		log.Fatalf("Failed to execute query: %v", err)
+	}
+	return userbook, nil
 }

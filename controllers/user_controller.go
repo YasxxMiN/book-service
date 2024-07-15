@@ -170,3 +170,14 @@ func (controller *AuthController) UpdateBookUser(c *fiber.Ctx) error {
 		"message": "Update book successfully",
 	})
 }
+
+func (controller *AuthController) GetBookUser(c *fiber.Ctx) error {
+	user := c.Locals("user").(*entities.User)
+	mybooks, err := controller.AuthUsecase.GetBookUser(user.User_ID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "con not get your books",
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(mybooks)
+}

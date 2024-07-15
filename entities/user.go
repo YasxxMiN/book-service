@@ -28,6 +28,13 @@ type UserBook struct {
 	BookID int `json:"book_id"`
 }
 
+func (UserBook) TableName() string {
+	return "user_books"
+}
+
+func (Book) TableName() string {
+	return "books"
+}
 
 type UsersLoginRes struct {
 	AccessToken string `json:"access_token"`
@@ -51,5 +58,3 @@ type UsersRepository interface {
 type AuthUsecase interface {
 	Login(req *User) (*UsersLoginRes, error)
 }
-
-

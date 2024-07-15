@@ -8,3 +8,15 @@ type Book struct {
 	UserID      int    `gorm:"type:integer" json:"user_id"`
 	Users       []User `gorm:"many2many:user_books;"`
 }
+
+type BookandUser struct {
+	UserID      int
+	BookID      int
+	Title       string
+	Author      string
+	Description string
+}
+
+type Mybook interface{
+	BookandUser
+}
