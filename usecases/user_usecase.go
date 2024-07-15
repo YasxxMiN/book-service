@@ -11,6 +11,8 @@ type AuthUsecase interface {
 	UpdateUserInfo(userID int, update *entities.User) error
 	ChangePassword(userID int, update *entities.User) error
 	AddBookToUser(userID int, req *entities.Book) (entities.User, entities.Book, error)
+	DeleteBookUser (userID int, req *entities.Book) error
+	UpdateBookUser (userID int, req *entities.Book) error
 }
 
 type authUsecase struct {
@@ -41,4 +43,12 @@ func (u *authUsecase) ChangePassword(userID int, update *entities.User) error {
 
 func (u *authUsecase) AddBookToUser(userID int, req *entities.Book) (entities.User, entities.Book, error) {
 	return u.authRepo.AddBookToUser(userID, req)
+}
+
+func (u *authUsecase) DeleteBookUser (userID int, req *entities.Book) error{
+	return u.authRepo.DeleteBookUser(userID,req)
+}
+
+func (u *authUsecase) UpdateBookUser (userID int, req *entities.Book) error {
+	return u.authRepo.UpdateBookUser(userID,req)
 }

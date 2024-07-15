@@ -17,4 +17,6 @@ func SetupRoutes(app *fiber.App, userController *controllers.AuthController) {
 	api.Patch("/users/me", middlewares.JwtAuthentication(), userController.UpdateUserInfo)
 	api.Patch("/users/password", middlewares.JwtAuthentication(), userController.ChangePassword)
 	app.Post("/addbook", middlewares.JwtAuthentication(), userController.AddBook)
+	app.Delete("/delete",middlewares.JwtAuthentication(), userController.DeleteBookUser)
+	api.Put("/update-book:book_id",middlewares.JwtAuthentication(), userController.UpdateBookUser)
 }

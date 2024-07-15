@@ -18,6 +18,8 @@ type AuthRepository interface {
 	UpdateUserInfo(userID int, req *entities.User) error
 	ChangePassword(userID int, req *entities.User) error
 	AddBookToUser(userID int, reqBook *entities.Book) (entities.User, entities.Book, error)
+	DeleteBookUser(userID int, reqBook *entities.Book) error
+	UpdateBookUser(userID int, reqBook *entities.Book) error
 }
 
 type authRepo struct {
@@ -124,4 +126,25 @@ func (r *authRepo) AddBookToUser(userID int, reqBook *entities.Book) (entities.U
 	}
 
 	return user, book, nil
+}
+
+func (r *authRepo) DeleteBookUser(userID int, reqBook *entities.Book) error {
+	var book_user entities.UserBook
+	if err := r.db.Table("user_books").Where("user_id = ? AND book_id = ?", userID, reqBook.Book_ID).Delete(&book_user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *authRepo) UpdateBookUser(userID int, reqBook *entities.Book) error {
+	if err := r.db.Table("user_books").
+		Where("user_id = ? AND book_id = ?", userID, reqBook.Book_ID).
+		Updates(map[string]interface{}{
+			"book_id": reqBook.Book_ID,
+		}).Error; err != nil {
+		return err
+	}
+
+	return nil
+
 }

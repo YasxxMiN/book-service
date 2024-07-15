@@ -114,7 +114,7 @@ func (controller *AuthController) AddBook(c *fiber.Ctx) error {
 	user1, book1, err := controller.AuthUsecase.AddBookToUser(user.User_ID, &request)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
+			"message": "Failed to add book",
 		})
 	}
 
@@ -122,5 +122,50 @@ func (controller *AuthController) AddBook(c *fiber.Ctx) error {
 		"message": "book added to user successfully",
 		"user":    user1.Username,
 		"book":    book1.Title,
+	})
+}
+
+func (controller *AuthController) DeleteBookUser(c *fiber.Ctx) error {
+	user := c.Locals("user").(*entities.User)
+	var request entities.Book
+
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid request body",
+		})
+	}
+
+	err := controller.AuthUsecase.DeleteBookUser(user.User_ID, &request)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to delete book",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Delete book successfully",
+	})
+
+}
+
+func (controller *AuthController) UpdateBookUser(c *fiber.Ctx) error {
+	user := c.Locals("user").(*entities.User)
+	var request entities.Book
+
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid request body",
+		})
+	}
+
+	err := controller.AuthUsecase.UpdateBookUser(user.User_ID, &request)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to update book",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Update book successfully",
 	})
 }
