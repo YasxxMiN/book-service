@@ -4,22 +4,24 @@ import (
 	"test-go-book/entities"
 	middlewares "test-go-book/pkg"
 
+	"test-go-book/repositories"
 	"test-go-book/usecases"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 type AuthController struct {
 	AuthUsecase usecases.AuthUsecase
 }
 
-func NewAuthController(r fiber.Router, authUse usecases.AuthUsecase) *AuthController {
+func NewAuthController(r fiber.Router, authUse usecases.AuthUsecase, db *gorm.DB ,repo repositories.AuthRepository) *AuthController {
 	controller := &AuthController{
 		AuthUsecase: authUse,
 	}
 
 	r.Post("/login", controller.Login)
-	r.Get("/auth-test", middlewares.JwtAuthentication(), controller.AuthTest)
+	r.Get("/auth-test", middlewares.JwtAuthentication(repo), controller.AuthTest)
 	return controller
 }
 
@@ -181,3 +183,24 @@ func (controller *AuthController) GetBookUser(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(mybooks)
 }
+
+func (controller *AuthController) Logout(c *fiber.Ctx) error {
+	token := c.Get("Authorization")
+	if token == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Missing or invalid token",
+		})
+	}
+
+	err := controller.AuthUsecase.LogOut(token)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "con not get your books",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Logged out successfully",
+	})
+}
+

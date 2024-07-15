@@ -23,6 +23,8 @@ type AuthRepository interface {
 	DeleteBookUser(userID int, reqBook *entities.Book) error
 	UpdateBookUser(userID int, reqBook *entities.Book, bookID string) error
 	GetBookUser(userID int) ([]entities.BookandUser, error)
+	Logout(token string) error
+	IsTokenBlacklisted(token string) (bool, error) 
 }
 
 type authRepo struct {
@@ -168,3 +170,19 @@ func (r *authRepo) GetBookUser(userID int) ([]entities.BookandUser, error) {
 	}
 	return userbook, nil
 }
+
+func (r *authRepo) Logout(token string) error {
+	if err := r.db.Table("tokens").Create(map[string]interface{}{"token": token}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *authRepo) IsTokenBlacklisted(token string) (bool, error) {
+	var count int64
+	if err := r.db.Table("tokens").Where("token = ?", token).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+

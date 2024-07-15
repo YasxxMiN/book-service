@@ -14,6 +14,8 @@ type AuthUsecase interface {
 	DeleteBookUser(userID int, req *entities.Book) error
 	UpdateBookUser(userID int, req *entities.Book, bookID string) error
 	GetBookUser(userID int) ([]entities.BookandUser, error)
+	LogOut(token string) error
+	IsTokenBlacklisted (token string) (bool, error)
 }
 
 type authUsecase struct {
@@ -56,4 +58,12 @@ func (u *authUsecase) UpdateBookUser(userID int, req *entities.Book, bookID stri
 
 func (u *authUsecase) GetBookUser(userID int) ([]entities.BookandUser, error) {
 	return u.authRepo.GetBookUser(userID)
+}
+
+func (u *authUsecase) LogOut(token string) error {
+	return u.authRepo.Logout(token)
+}
+
+func (u *authUsecase) IsTokenBlacklisted (token string) (bool, error) {
+	return u.authRepo.IsTokenBlacklisted(token)
 }

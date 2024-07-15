@@ -25,13 +25,12 @@ func main() {
 	db.AutoMigrate(&entities.User{}, &entities.Book{}, &entities.Token{})
 
 	app := fiber.New()
-
 	authRepo := repositories.NewAuthRepository(db)
 	userUsecase := usecases.NewAuthUsecase(authRepo)
 	authRouter := app.Group("/auth")
-	authController := controllers.NewAuthController(authRouter, userUsecase)
+	authController := controllers.NewAuthController(authRouter, userUsecase, db, authRepo)
 
-	routes.SetupRoutes(app, authController)
+	routes.SetupRoutes(app, authController, authRepo)
 
 	log.Fatal(app.Listen(":3000"))
 

@@ -4,16 +4,32 @@ import (
 	"os"
 	"test-go-book/entities"
 
+	"test-go-book/repositories"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	_"gorm.io/gorm"
 )
 
-func JwtAuthentication() fiber.Handler {
+
+func  JwtAuthentication(authRepo repositories.AuthRepository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tokenString := c.Get("Authorization")
 		if tokenString == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "Missing or invalid token",
+			})
+		}
+
+		blacklisted, err := authRepo.IsTokenBlacklisted(tokenString)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to check token validity",
+			})
+		}
+		if blacklisted {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Token has been invalidated",
 			})
 		}
 
@@ -46,5 +62,4 @@ func JwtAuthentication() fiber.Handler {
 		return c.Next()
 	}
 }
-
 
