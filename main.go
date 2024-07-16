@@ -12,7 +12,6 @@ import (
 	"test-go-book/usecases"
 
 	"github.com/gofiber/fiber/v2"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 func main() {
@@ -27,8 +26,7 @@ func main() {
 	app := fiber.New()
 	authRepo := repositories.NewAuthRepository(db)
 	userUsecase := usecases.NewAuthUsecase(authRepo)
-	authRouter := app.Group("/auth")
-	authController := controllers.NewAuthController(authRouter, userUsecase, db, authRepo)
+	authController := controllers.NewAuthController(userUsecase)
 
 	routes.SetupRoutes(app, authController, authRepo)
 

@@ -8,11 +8,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
-	_"gorm.io/gorm"
 )
 
-
-func  JwtAuthentication(authRepo repositories.AuthRepository) fiber.Handler {
+func JwtAuthentication(authRepo repositories.AuthRepository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tokenString := c.Get("Authorization")
 		if tokenString == "" {
@@ -53,13 +51,7 @@ func  JwtAuthentication(authRepo repositories.AuthRepository) fiber.Handler {
 			User_ID:  claims.Id,
 			Username: claims.Username,
 		}
-
-		book := &entities.Book{
-			Book_ID: claims.Book_id,
-		}
 		c.Locals("user", user)
-		c.Locals("book", book)
 		return c.Next()
 	}
 }
-

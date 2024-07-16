@@ -14,30 +14,9 @@ type User struct {
 	Books        []Book `gorm:"many2many:user_books;"`
 }
 
-type MyUser struct {
-	UserID   int
-	UserName string
-	Password string
-	Name     string
-	Email    string
-	Phone    string
-}
-
 type UserBook struct {
 	UserID int `json:"user_id"`
 	BookID int `json:"book_id"`
-}
-
-func (UserBook) TableName() string {
-	return "user_books"
-}
-
-func (Book) TableName() string {
-	return "books"
-}
-
-type UsersLoginRes struct {
-	AccessToken string `json:"access_token"`
 }
 
 type UsersClaims struct {
@@ -45,16 +24,4 @@ type UsersClaims struct {
 	Username string `json:"username"`
 	Book_id  int    `json:"book_id"`
 	jwt.RegisteredClaims
-}
-
-type AuthRepository interface {
-	SignUserAccessToken(req *User) (string, error)
-}
-
-type UsersRepository interface {
-	FindOneUser(username string) (*User, error)
-}
-
-type AuthUsecase interface {
-	Login(req *User) (*UsersLoginRes, error)
 }

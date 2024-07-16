@@ -17,6 +17,3 @@ type BookandUser struct {
 	Description string
 }
 
-type Mybook interface{
-	BookandUser
-}

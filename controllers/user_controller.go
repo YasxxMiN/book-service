@@ -2,27 +2,20 @@ package controllers
 
 import (
 	"test-go-book/entities"
-	middlewares "test-go-book/pkg"
-
-	"test-go-book/repositories"
 	"test-go-book/usecases"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
+
 )
 
 type AuthController struct {
 	AuthUsecase usecases.AuthUsecase
 }
 
-func NewAuthController(r fiber.Router, authUse usecases.AuthUsecase, db *gorm.DB ,repo repositories.AuthRepository) *AuthController {
-	controller := &AuthController{
+func NewAuthController(authUse usecases.AuthUsecase) *AuthController {
+	return &AuthController{
 		AuthUsecase: authUse,
 	}
-
-	r.Post("/login", controller.Login)
-	r.Get("/auth-test", middlewares.JwtAuthentication(repo), controller.AuthTest)
-	return controller
 }
 
 func (controller *AuthController) Login(c *fiber.Ctx) error {

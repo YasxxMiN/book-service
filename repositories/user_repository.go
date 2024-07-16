@@ -24,7 +24,7 @@ type AuthRepository interface {
 	UpdateBookUser(userID int, reqBook *entities.Book, bookID string) error
 	GetBookUser(userID int) ([]entities.BookandUser, error)
 	Logout(token string) error
-	IsTokenBlacklisted(token string) (bool, error) 
+	IsTokenBlacklisted(token string) (bool, error)
 }
 
 type authRepo struct {
@@ -185,4 +185,3 @@ func (r *authRepo) IsTokenBlacklisted(token string) (bool, error) {
 	}
 	return count > 0, nil
 }
-
